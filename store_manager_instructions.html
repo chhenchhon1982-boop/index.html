@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Store Manager Pro</title>
+  <style>
+    body {font-family: Arial; margin:20px; background:#f5f5f5;}
+    h1 {text-align:center;}
+    input, select, button {padding:8px; margin:5px;}
+    .box {background:#fff; padding:15px; border-radius:10px; margin-bottom:20px;}
+    table {width:100%; border-collapse: collapse;}
+    th, td {padding:10px; border-bottom:1px solid #ddd;}
+    button {cursor:pointer;}
+  </style>
+</head>
+
+<body>
+
+<h1>🛒 Store Manager Pro</h1>
+
+<div class="box">
+  <h3>Add Product</h3>
+  <input id="name" placeholder="Product name">
+  <select id="category"></select>
+
+  <br>
+
+  <input id="price_in" type="number" placeholder="Input Price">
+  <input id="price_out" type="number" placeholder="Output Price">
+  <input id="price_wh" type="number" placeholder="Wholesale Price">
+
+  <input id="stock" type="number" placeholder="Stock">
+
+  <br>
+  <button onclick="addProduct()">Add Product</button>
+</div>
+
+<div class="box">
+  <h3>Categories</h3>
+  <input id="newCat" placeholder="New category">
+  <button onclick="addCategory()">Add Category</button>
+</div>
+
+<div class="box">
+  <h3>Products</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Prices</th>
+        <th>Stock</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="list"></tbody>
+  </table>
+</div>
+
+<script>
+
+// ================= STORAGE =================
+let products = JSON.parse(localStorage.getItem('products')) || [];
+let categories = JSON.parse(localStorage.getItem('categories')) || ["Food","Drink","Other"];
+
+function save(){
+  localStorage.setItem('products', JSON.stringify(products));
+  localStorage.setItem('categories', JSON.stringify(categories));
+}
+
+// localStorage keeps data even after refresh :contentReference[oaicite:1]{index=1}
+
+
+// ================= CATEGORY =================
+function addCategory(){
+  let name = document.getElementById('newCat').value;
+  if(!name) return;
+
+  categories.push(name);
+  save();
+  render();
+}
+
+// ================= PRODUCT =================
+function addProduct(){
+  let p = {
+    id: Date.now(),
+    name: document.getElementById('name').value,
+    category: document.getElementById('category').value,
+    price_in: +document.getElementById('price_in').value,
+    price_out: +document.getElementById('price_out').value,
+    price_wh: +document.getElementById('price_wh').value,
+    stock: +document.getElementById('stock').value
+  };
+
+  products.push(p);
+  save();
+  render();
+}
+
+// ================= DELETE =================
+function del(id){
+  products = products.filter(p=>p.id!==id);
+  save();
+  render();
+}
+
+// ================= RENDER =================
+function render(){
+
+  // category dropdown
+  let catSelect = document.getElementById('category');
+  catSelect.innerHTML = categories.map(c=>`<option>${c}</option>`).join('');
+
+  // product list
+  let list = document.getElementById('list');
+  list.innerHTML = products.map(p=>`
+    <tr>
+      <td>${p.name}</td>
+      <td>${p.category}</td>
+      <td>
+        IN: $${p.price_in} <br>
+        OUT: $${p.price_out} <br>
+        WH: $${p.price_wh}
+      </td>
+      <td>${p.stock}</td>
+      <td><button onclick="del(${p.id})">Delete</button></td>
+    </tr>
+  `).join('');
+}
+
+render();
+
+</script>
+
+</body>
+</html>
