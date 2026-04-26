@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Store Manager">
+<meta name="theme-color" content="#1D9E75">
+<title>Store Manager</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;min-height:100vh;min-height:100dvh}
+  :root{--green:#1D9E75;--green-dark:#0F6E56;--red:#D85A30;--blue:#185FA5;--bg:#f5f5f0;--card:#fff;--border:#e0ddd5;--text:#1a1a1a;--text2:#6b6b6b;--text3:#9b9b9b}
+  #app{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+  header{background:#fff;border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;gap:10px;height:56px;flex-shrink:0;position:relative;z-index:10}
+  .app-logo{width:32px;height:32px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .app-title{font-size:16px;font-weight:600;color:var(--text);flex:1}
+  .lang-btn{padding:6px 12px;border:1px solid var(--border);border-radius:99px;background:#fff;font-size:12px;font-weight:500;color:var(--text);cursor:pointer}
+  .search-bar{padding:10px 16px;background:#fff;border-bottom:1px solid var(--border);flex-shrink:0}
+  .search-wrap{position:relative}
+  .search-wrap input{width:100%;height:38px;border:1px solid var(--border);border-radius:99px;padding:0 14px 0 38px;font-size:14px;background:#f5f5f0;color:var(--text);font-family:inherit}
+  .search-wrap input:focus{outline:none;border-color:var(--green);background:#fff}
+  .search-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:16px}
+  main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px}
+  nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:20}
+  .nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;border:none;background:transparent;font-size:10px;font-weight:500;color:var(--text2);cursor:pointer;gap:3px;font-family:inherit}
+  .nav-tab.active{color:var(--green)}
+  .nav-ico{font-size:20px;line-height:1}
+  .page{display:none;padding:14px 16px;flex-direction:column;gap:12px}
+  .page.active{display:flex}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .stat{background:#f5f5f0;border-radius:10px;padding:12px}
+  .stat-lbl{font-size:11px;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.4px}
+  .stat-val{font-size:22px;font-weight:600;color:var(--text)}
+  .stat-val.g{color:var(--green)}
+  .stat-val.r{color:var(--red)}
+  .sec-title{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px}
+  .prod-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+  .prod-row:last-child{border-bottom:none}
+  .prod-ico{width:38px;height:38px;border-radius:10px;background:#f5f5f0;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .prod-info{flex:1;min-width:0}
+  .prod-name{font-size:14px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .prod-sub{font-size:11px;color:var(--text2);margin-top:2px}
+  .prod-right{text-align:right;flex-shrink:0}
+  .prod-price{font-size:14px;font-weight:600;color:var(--text)}
+  .prod-stock{font-size:11px;margin-top:2px}
+  .sok{color:var(--green)}
+  .slow{color:var(--red)}
+  .badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:500}
+  .bf{background:#E1F5EE;color:#0F6E56}
+  .bd{background:#E6F1FB;color:#185FA5}
+  .bds{background:#FBEAF0;color:#993556}
+  .bo{background:#f0efe8;color:#5a5a5a}
+  .btn{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:10px;padding:10px 16px;font-size:14px;cursor:pointer;font-family:inherit;transition:all 0.15s;text-align:center}
+  .btn:active{transform:scale(0.97)}
+  .btn-p{background:var(--green);color:#fff;border-color:var(--green);font-weight:600}
+  .btn-p:active{background:var(--green-dark)}
+  .ig{display:flex;flex-direction:column;gap:4px}
+  .ig label{font-size:12px;color:var(--text2);font-weight:500}
+  input,select{width:100%;height:42px;border:1px solid var(--border);border-radius:10px;padding:0 12px;font-size:14px;background:var(--card);color:var(--text);font-family:inherit;-webkit-appearance:none;appearance:none}
+  input:focus,select:focus{outline:none;border-color:var(--green)}
+  .fg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tx-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+  .tx-row:last-child{border-bottom:none}
+  .tx-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .dot-in{background:var(--green)}
+  .dot-out{background:var(--red)}
+  .tx-info{flex:1;min-width:0}
+  .tx-name{font-size:13px;font-weight:500;color:var(--text)}
+  .tx-meta{font-size:11px;color:var(--text2)}
+  .tx-amt{font-size:13px;font-weight:600}
+  .amt-in{color:var(--green)}
+  .amt-out{color:var(--red)}
+  .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .cat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center}
+  .cat-emo{font-size:28px;margin-bottom:6px}
+  .cat-name{font-size:13px;font-weight:600;color:var(--text)}
+  .cat-cnt{font-size:11px;color:var(--text2)}
+  .cat-rev{font-size:15px;font-weight:600;color:var(--green);margin-top:3px}
+  .prog{height:5px;background:#f0efe8;border-radius:99px;overflow:hidden;margin-top:8px}
+  .prog-fill{height:100%;background:var(--green);border-radius:99px}
+  .empty{text-align:center;padding:28px 16px;color:var(--text2);font-size:14px}
+  .qadj{display:flex;align-items:center;gap:8px}
+  .qbtn{width:34px;height:34px;border:1px solid var(--border);background:#f5f5f0;border-radius:8px;cursor:pointer;font-size:20px;color:var(--text);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit}
+  .qval{width:44px;text-align:center;font-size:16px;font-weight:600;color:var(--text)}
+  .qinp{flex:1;height:34px}
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;align-items:flex-end}
+  .overlay.open{display:flex}
+  .sheet{background:var(--card);border-radius:20px 20px 0 0;width:100%;padding:20px;display:flex;flex-direction:column;gap:12px;max-height:90dvh;overflow-y:auto;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+  .sheet-handle{width:40px;height:4px;background:var(--border);border-radius:99px;margin:0 auto 6px}
+  .sheet-title{font-size:17px;font-weight:600;color:var(--text)}
+  .sheet-actions{display:flex;gap:10px}
+  .sheet-actions .btn{flex:1}
+  .edit-btn{border:none;background:transparent;color:var(--text2);cursor:pointer;font-size:18px;padding:6px;line-height:1}
+  .no-res{text-align:center;padding:20px;color:var(--text2);font-size:14px}
+  .low-alert{background:#FAECE7;border-radius:8px;padding:4px 8px;font-size:11px;color:#993C1D;font-weight:500}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="app-logo">🏪</div>
+    <div class="app-title" id="app-title">Store Manager</div>
+    <button class="lang-btn" onclick="toggleLang()" id="lang-btn">ខ្មែរ</button>
+  </header>
+  <div class="search-bar">
+    <div class="search-wrap">
+      <span class="search-ico">🔍</span>
+      <input type="text" id="search-input" placeholder="Search products..." oninput="onSearch(this.value)">
+    </div>
+  </div>
+  <main>
+    <div id="page-dashboard" class="page active">
+      <div class="stat-grid">
+        <div class="stat"><div class="stat-lbl" data-t="stat_total">Total products</div><div class="stat-val" id="s-total">0</div></div>
+        <div class="stat"><div class="stat-lbl" data-t="stat_value">Total value</div><div class="stat-val g" id="s-value">$0</div></div>
+        <div class="stat"><div class="stat-lbl" data-t="stat_in">Stock in</div><div class="stat-val g" id="s-in">0</div></div>
+        <div class="stat"><div class="stat-lbl" data-t="stat_out">Stock out</div><div class="stat-val r" id="s-out">0</div></div>
+      </div>
+      <div class="card"><div class="sec-title" data-t="low_stock">Low stock alert</div><div id="low-list"></div></div>
+      <div class="card"><div class="sec-title" data-t="recent">Recent activity</div><div id="recent-list"></div></div>
+    </div>
+    <div id="page-products" class="page">
+      <button class="btn btn-p" onclick="openAdd()" data-t="add_product">+ Add product</button>
+      <div class="card"><div class="sec-title" data-t="all_products">All products</div><div id="prod-list"></div></div>
+    </div>
+    <div id="page-flow" class="page">
+      <div class="card">
+        <div class="sec-title" data-t="record_move">Record stock movement</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="ig"><label data-t="lbl_product">Product</label><select id="flow-prod"></select></div>
+          <div class="ig"><label data-t="lbl_type">Type</label>
+            <select id="flow-type">
+              <option value="in" data-t="type_in">Stock In (received)</option>
+              <option value="out" data-t="type_out">Stock Out (sold/used)</option>
+            </select>
+          </div>
+          <div class="ig"><label data-t="lbl_qty">Quantity</label>
+            <div class="qadj">
+              <button class="qbtn" onclick="adjQ(-1)">−</button>
+              <span class="qval" id="q-disp">1</span>
+              <button class="qbtn" onclick="adjQ(1)">+</button>
+              <input class="qinp" type="number" id="flow-qty" value="1" min="1" oninput="document.getElementById('q-disp').textContent=this.value||1">
+            </div>
+          </div>
+          <div class="ig"><label data-t="lbl_note">Note (optional)</label><input type="text" id="flow-note" placeholder="e.g. morning delivery"></div>
+          <button class="btn btn-p" onclick="recordFlow()" data-t="btn_record">Record movement</button>
+        </div>
+      </div>
+      <div class="card"><div class="sec-title" data-t="tx_log">Transaction log</div><div id="tx-list"></div></div>
+    </div>
+    <div id="page-categories" class="page">
+      <div class="cat-grid" id="cat-grid"></div>
+    </div>
+  </main>
+  <nav>
+    <button class="nav-tab active" onclick="showPage('dashboard')" id="tab-dashboard"><span class="nav-ico">📊</span><span data-t="nav_dash">Dashboard</span></button>
+    <button class="nav-tab" onclick="showPage('products')" id="tab-products"><span class="nav-ico">📦</span><span data-t="nav_prod">Products</span></button>
+    <button class="nav-tab" onclick="showPage('flow')" id="tab-flow"><span class="nav-ico">⇅</span><span data-t="nav_flow">In/Out</span></button>
+    <button class="nav-tab" onclick="showPage('categories')" id="tab-categories"><span class="nav-ico">🗂</span><span data-t="nav_cat">Categories</span></button>
+  </nav>
+</div>
+
+<div class="overlay" id="add-modal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="modal-title">Add product</div>
+    <div class="ig"><label data-t="lbl_name">Product name</label><input id="p-name" placeholder="e.g. Iced Coffee"></div>
+    <div class="ig"><label data-t="lbl_name_kh">Khmer name (optional)</label><input id="p-name-kh" placeholder="ឧ. កាហ្វេទឹកកក"></div>
+    <div class="fg">
+      <div class="ig"><label data-t="lbl_cat">Category</label>
+        <select id="p-cat">
+          <option value="Food">🍽 Food</option>
+          <option value="Drink">🥤 Drink</option>
+          <option value="Dessert">🍡 Dessert</option>
+          <option value="Other">📦 Other</option>
+        </select>
+      </div>
+      <div class="ig"><label data-t="lbl_price">Price ($)</label><input id="p-price" type="number" min="0" step="0.01" placeholder="0.00"></div>
+    </div>
+    <div class="fg">
+      <div class="ig"><label data-t="lbl_stock">Initial stock</label><input id="p-stock" type="number" min="0" placeholder="0"></div>
+      <div class="ig"><label data-t="lbl_low">Low stock alert</label><input id="p-low" type="number" min="0" placeholder="5"></div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn" onclick="closeModal()" data-t="btn_cancel">Cancel</button>
+      <button class="btn btn-p" onclick="saveProduct()" id="save-btn">Add product</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const T={
+  en:{nav_dash:'Dashboard',nav_prod:'Products',nav_flow:'In/Out',nav_cat:'Categories',stat_total:'Total products',stat_value:'Total value',stat_in:'Stock in',stat_out:'Stock out',low_stock:'Low stock alert',recent:'Recent activity',all_products:'All products',record_move:'Record stock movement',tx_log:'Transaction log',lbl_product:'Product',lbl_type:'Type',lbl_qty:'Quantity',lbl_note:'Note (optional)',lbl_name:'Product name',lbl_name_kh:'Khmer name (optional)',lbl_cat:'Category',lbl_price:'Price ($)',lbl_stock:'Initial stock',lbl_low:'Low stock alert',btn_record:'Record movement',btn_cancel:'Cancel',add_product:'+ Add product',type_in:'Stock In (received)',type_out:'Stock Out (sold/used)',app_title:'Store Manager',lang_switch:'ខ្មែរ',modal_add:'Add product',modal_edit:'Edit product',save_add:'Add product',save_edit:'Save changes',empty_prod:'No products yet. Add your first product!',empty_low:'All products have sufficient stock',empty_recent:'No activity yet',empty_tx:'No transactions yet',no_result:'No products found',low_badge:'Low',only_left:'Only {n} left',just_now:'just now',min_ago:'{n}m ago',hr_ago:'{n}h ago',day_ago:'{n}d ago',stock_in:'Stock in: {name}',stock_out:'Stock out: {name}',not_enough:'Not enough stock! Current: {n}',cat_items:'{n} items',opening:'Opening stock',evening:'Evening sales',morning:'Morning delivery'},
+  kh:{nav_dash:'ផ្ទាំងគ្រប់គ្រង',nav_prod:'ផលិតផល',nav_flow:'ចូល/ចេញ',nav_cat:'ប្រភេទ',stat_total:'ផលិតផលសរុប',stat_value:'តម្លៃសរុប',stat_in:'ស្តុកចូល',stat_out:'ស្តុកចេញ',low_stock:'ការជូនដំណឹងស្តុកទាប',recent:'សកម្មភាពថ្មីៗ',all_products:'ផលិតផលទាំងអស់',record_move:'កត់ចំណាំការផ្លាស់ប្តូរស្តុក',tx_log:'កំណត់ហេតុប្រតិបត្តិការ',lbl_product:'ផលិតផល',lbl_type:'ប្រភេទ',lbl_qty:'បរិមាណ',lbl_note:'កំណត់ចំណាំ (ជាជម្រើស)',lbl_name:'ឈ្មោះផលិតផល',lbl_name_kh:'ឈ្មោះខ្មែរ (ជាជម្រើស)',lbl_cat:'ប្រភេទ',lbl_price:'តម្លៃ ($)',lbl_stock:'ស្តុកដំបូង',lbl_low:'ការជូនដំណឹងស្តុកទាប',btn_record:'កត់ចំណាំ',btn_cancel:'បោះបង់',add_product:'+ បន្ថែមផលិតផល',type_in:'ស្តុកចូល (ទទួលបាន)',type_out:'ស្តុកចេញ (លក់/ប្រើ)',app_title:'គ្រប់គ្រងហាង',lang_switch:'English',modal_add:'បន្ថែមផលិតផល',modal_edit:'កែប្រែផលិតផល',save_add:'បន្ថែម',save_edit:'រក្សាទុក',empty_prod:'មិនទាន់មានផលិតផល។ បន្ថែមផលិតផលដំបូង!',empty_low:'ផលិតផលទាំងអស់មានស្តុកគ្រប់គ្រាន់',empty_recent:'មិនទាន់មានសកម្មភាព',empty_tx:'មិនទាន់មានប្រតិបត្តិការ',no_result:'រកមិនឃើញផលិតផល',low_badge:'ទាប',only_left:'នៅសល់ {n}',just_now:'ទើបបញ្ចប់',min_ago:'{n} នាទីមុន',hr_ago:'{n} ម៉ោងមុន',day_ago:'{n} ថ្ងៃមុន',stock_in:'ស្តុកចូល: {name}',stock_out:'ស្តុកចេញ: {name}',not_enough:'ស្តុកមិនគ្រប់! បច្ចុប្បន្ន: {n}',cat_items:'{n} មុខ',opening:'ស្តុកដំបូង',evening:'លក់ពេលល្ងាច',morning:'ដឹកជញ្ជូនព្រឹក'}
+};
+const CATS={Food:{e:'🍽',b:'bf'},Drink:{e:'🥤',b:'bd'},Dessert:{e:'🍡',b:'bds'},Other:{e:'📦',b:'bo'}};
+const CATN={en:{Food:'Food',Drink:'Drink',Dessert:'Dessert',Other:'Other'},kh:{Food:'អាហារ',Drink:'ភេសជ្ជៈ',Dessert:'បង្អែម',Other:'ផ្សេងៗ'}};
+
+let lang='en';
+let products=JSON.parse(localStorage.getItem('sm_products')||'null')||[
+  {id:1,name:'Iced Coffee',nameKh:'កាហ្វេទឹកកក',cat:'Drink',price:3.50,stock:24,low:5},
+  {id:2,name:'Pad Thai',nameKh:'ផាដថៃ',cat:'Food',price:7.00,stock:12,low:5},
+  {id:3,name:'Mango Sticky Rice',nameKh:'បាយដំណើបស្វាយ',cat:'Dessert',price:4.00,stock:3,low:5},
+  {id:4,name:'Spring Rolls',nameKh:'នំគ្រឿង',cat:'Food',price:3.00,stock:18,low:5},
+  {id:5,name:'Fruit Smoothie',nameKh:'ស្មូទីផ្លែឈើ',cat:'Drink',price:4.50,stock:8,low:5},
+];
+let transactions=JSON.parse(localStorage.getItem('sm_tx')||'null')||[
+  {id:1,prodId:1,type:'in',qty:24,note:'opening',time:Date.now()-7200000},
+  {id:2,prodId:2,type:'in',qty:12,note:'opening',time:Date.now()-7100000},
+  {id:3,prodId:3,type:'in',qty:8,note:'opening',time:Date.now()-7000000},
+  {id:4,prodId:3,type:'out',qty:5,note:'evening',time:Date.now()-3600000},
+];
+let nextId=Math.max(...products.map(p=>p.id),...transactions.map(t=>t.id),5)+1;
+let editingId=null,fqty=1,searchQ='';
+
+function save(){localStorage.setItem('sm_products',JSON.stringify(products));localStorage.setItem('sm_tx',JSON.stringify(transactions));}
+function tr(k,v){let s=(T[lang]||T.en)[k]||k;if(v)Object.keys(v).forEach(x=>{s=s.replace('{'+x+'}',v[x])});return s;}
+function pname(p){return lang==='kh'&&p.nameKh?p.nameKh:p.name;}
+function fmt(n){return '$'+Number(n).toFixed(2);}
+function timeAgo(ts){const d=Math.floor((Date.now()-ts)/1000);if(d<60)return tr('just_now');if(d<3600)return tr('min_ago',{n:Math.floor(d/60)});if(d<86400)return tr('hr_ago',{n:Math.floor(d/3600)});return tr('day_ago',{n:Math.floor(d/86400)});}
+function noteLabel(n){const m={opening:tr('opening'),evening:tr('evening'),morning:tr('morning')};return m[n]||n||'';}
+
+function applyLang(){
+  document.querySelectorAll('[data-t]').forEach(el=>el.textContent=tr(el.getAttribute('data-t')));
+  document.getElementById('lang-btn').textContent=tr('lang_switch');
+  document.getElementById('app-title').textContent=tr('app_title');
+  document.getElementById('search-input').placeholder=lang==='kh'?'ស្វែងរកផលិតផល...':'Search products...';
+  document.querySelectorAll('#flow-type option').forEach(o=>o.textContent=tr(o.getAttribute('data-t')));
+  document.querySelectorAll('#p-cat option').forEach(o=>{const v=o.value;o.textContent=(CATS[v]?.e||'')+(CATS[v]?' ':'')+CATN[lang][v];});
+  document.title=tr('app_title');
+}
+function toggleLang(){lang=lang==='en'?'kh':'en';applyLang();render();}
+
+function showPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('tab-'+p).classList.add('active');
+  render();
+}
+
+function onSearch(v){searchQ=v.toLowerCase().trim();renderProducts();}
+function filtered(){if(!searchQ)return products;return products.filter(p=>p.name.toLowerCase().includes(searchQ)||(p.nameKh&&p.nameKh.includes(searchQ)));}
+
+function render(){applyLang();renderDash();renderProducts();renderFlow();renderCats();}
+
+function renderDash(){
+  const ti=transactions.filter(t=>t.type==='in').reduce((a,t)=>a+t.qty,0);
+  const to=transactions.filter(t=>t.type==='out').reduce((a,t)=>a+t.qty,0);
+  const tv=products.reduce((a,p)=>a+p.price*p.stock,0);
+  document.getElementById('s-total').textContent=products.length;
+  document.getElementById('s-value').textContent=fmt(tv);
+  document.getElementById('s-in').textContent=ti;
+  document.getElementById('s-out').textContent=to;
+  const low=products.filter(p=>p.stock<=p.low);
+  document.getElementById('low-list').innerHTML=!low.length?`<div class="empty">${tr('empty_low')}</div>`:
+    low.map(p=>`<div class="prod-row"><div class="prod-ico">${CATS[p.cat]?.e||'📦'}</div><div class="prod-info"><div class="prod-name">${pname(p)}</div><div class="prod-sub">${tr('only_left',{n:p.stock})}</div></div><span class="low-alert">${tr('low_badge')}</span></div>`).join('');
+  const rec=[...transactions].sort((a,b)=>b.time-a.time).slice(0,5);
+  document.getElementById('recent-list').innerHTML=!rec.length?`<div class="empty">${tr('empty_recent')}</div>`:
+    rec.map(tx=>{const p=products.find(x=>x.id===tx.prodId)||{name:'?',nameKh:''};return`<div class="tx-row"><div class="tx-dot ${tx.type==='in'?'dot-in':'dot-out'}"></div><div class="tx-info"><div class="tx-name">${tr(tx.type==='in'?'stock_in':'stock_out',{name:pname(p)})}</div><div class="tx-meta">${timeAgo(tx.time)}${tx.note?' · '+noteLabel(tx.note):''}</div></div><div class="tx-amt ${tx.type==='in'?'amt-in':'amt-out'}">${tx.type==='in'?'+':'-'}${tx.qty}</div></div>`;}).join('');
+}
+
+function renderProducts(){
+  const fp=filtered();
+  const el=document.getElementById('prod-list');
+  if(!products.length){el.innerHTML=`<div class="empty">${tr('empty_prod')}</div>`;return;}
+  if(!fp.length){el.innerHTML=`<div class="no-res">${tr('no_result')}</div>`;return;}
+  el.innerHTML=fp.map(p=>`<div class="prod-row"><div class="prod-ico">${CATS[p.cat]?.e||'📦'}</div><div class="prod-info"><div class="prod-name">${pname(p)}</div><div class="prod-sub"><span class="badge ${CATS[p.cat]?.b||'bo'}">${CATN[lang][p.cat]||p.cat}</span></div></div><div class="prod-right"><div class="prod-price">${fmt(p.price)}</div><div class="prod-stock ${p.stock<=p.low?'slow':'sok'}">${p.stock} ${lang==='kh'?'ឯកតា':'units'}</div></div><button class="edit-btn" onclick="editProd(${p.id})">✎</button></div>`).join('');
+  document.getElementById('flow-prod').innerHTML=products.map(p=>`<option value="${p.id}">${pname(p)}</option>`).join('');
+}
+
+function renderFlow(){
+  const sorted=[...transactions].sort((a,b)=>b.time-a.time);
+  document.getElementById('tx-list').innerHTML=!sorted.length?`<div class="empty">${tr('empty_tx')}</div>`:
+    sorted.map(tx=>{const p=products.find(x=>x.id===tx.prodId)||{name:'?',nameKh:''};return`<div class="tx-row"><div class="tx-dot ${tx.type==='in'?'dot-in':'dot-out'}"></div><div class="tx-info"><div class="tx-name">${tr(tx.type==='in'?'stock_in':'stock_out',{name:pname(p)})}</div><div class="tx-meta">${timeAgo(tx.time)}${tx.note?' · '+noteLabel(tx.note):''}</div></div><div class="tx-amt ${tx.type==='in'?'amt-in':'amt-out'}">${tx.type==='in'?'+':'-'}${tx.qty}</div></div>`;}).join('');
+}
+
+function renderCats(){
+  const cats=Object.keys(CATS);
+  const maxR=Math.max(...cats.map(c=>products.filter(p=>p.cat===c).reduce((a,p)=>a+p.price*p.stock,0)),1);
+  document.getElementById('cat-grid').innerHTML=cats.map(c=>{
+    const ps=products.filter(p=>p.cat===c);
+    const rev=ps.reduce((a,p)=>a+p.price*p.stock,0);
+    return`<div class="cat-card"><div class="cat-emo">${CATS[c].e}</div><div class="cat-name">${CATN[lang][c]||c}</div><div class="cat-cnt">${tr('cat_items',{n:ps.length})}</div><div class="cat-rev">${fmt(rev)}</div><div class="prog"><div class="prog-fill" style="width:${Math.round(rev/maxR*100)}%"></div></div></div>`;
+  }).join('');
+}
+
+function openAdd(){editingId=null;document.getElementById('modal-title').textContent=tr('modal_add');document.getElementById('save-btn').textContent=tr('save_add');document.getElementById('p-name').value='';document.getElementById('p-name-kh').value='';document.getElementById('p-price').value='';document.getElementById('p-stock').value='';document.getElementById('p-low').value='5';document.getElementById('p-cat').value='Food';document.getElementById('add-modal').classList.add('open');}
+function editProd(id){const p=products.find(x=>x.id===id);if(!p)return;editingId=id;document.getElementById('modal-title').textContent=tr('modal_edit');document.getElementById('save-btn').textContent=tr('save_edit');document.getElementById('p-name').value=p.name;document.getElementById('p-name-kh').value=p.nameKh||'';document.getElementById('p-price').value=p.price;document.getElementById('p-stock').value=p.stock;document.getElementById('p-low').value=p.low;document.getElementById('p-cat').value=p.cat;document.getElementById('add-modal').classList.add('open');}
+function closeModal(){document.getElementById('add-modal').classList.remove('open');}
+
+function saveProduct(){
+  const name=document.getElementById('p-name').value.trim();
+  const nameKh=document.getElementById('p-name-kh').value.trim();
+  const price=parseFloat(document.getElementById('p-price').value)||0;
+  const stock=parseInt(document.getElementById('p-stock').value)||0;
+  const low=parseInt(document.getElementById('p-low').value)||5;
+  const cat=document.getElementById('p-cat').value;
+  if(!name)return;
+  if(editingId){const p=products.find(x=>x.id===editingId);if(p){p.name=name;p.nameKh=nameKh;p.price=price;p.stock=stock;p.low=low;p.cat=cat;}}
+  else{const np={id:nextId++,name,nameKh,cat,price,stock,low};products.push(np);if(stock>0)transactions.push({id:nextId++,prodId:np.id,type:'in',qty:stock,note:'opening',time:Date.now()});}
+  save();closeModal();render();
+}
+
+function adjQ(d){fqty=Math.max(1,fqty+d);document.getElementById('flow-qty').value=fqty;document.getElementById('q-disp').textContent=fqty;}
+
+function recordFlow(){
+  const pid=parseInt(document.getElementById('flow-prod').value);
+  const type=document.getElementById('flow-type').value;
+  const qty=parseInt(document.getElementById('flow-qty').value)||1;
+  const note=document.getElementById('flow-note').value.trim();
+  const p=products.find(x=>x.id===pid);if(!p)return;
+  if(type==='out'&&qty>p.stock){alert(tr('not_enough',{n:p.stock}));return;}
+  if(type==='in')p.stock+=qty;else p.stock-=qty;
+  transactions.push({id:nextId++,prodId:pid,type,qty,note,time:Date.now()});
+  document.getElementById('flow-note').value='';
+  fqty=1;document.getElementById('flow-qty').value=1;document.getElementById('q-disp').textContent=1;
+  save();render();
+}
+
+document.getElementById('add-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+render();
+</script>
+</body>
+</html>
